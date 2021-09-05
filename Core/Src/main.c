@@ -92,11 +92,11 @@ int main(void)
   MX_GPIO_Init();
 
   // Enable CYCCNT
-  DWT_CTRL &= (~(1<<0));
+  DWT_CTRL |= (1<<0);
 
   /* USER CODE BEGIN 2 */
-//  SEGGER_SYSVIEW_Conf();
-//  SEGGER_SYSVIEW_Start();
+  SEGGER_SYSVIEW_Conf();
+  SEGGER_SYSVIEW_Start();
   
   BaseType_t val;
   val = xTaskCreate(task01_handler, "Task-01", 200, "hello-task01",2, &task01_handle);
@@ -304,10 +304,12 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static void task01_handler(void* parameter)
 {
-  // char msg[100];
+  char msg[100];
   while(1)
   {
-    printf("%s\n", (char*)parameter);
+    // printf("%s\n", (char*)parameter);
+    snprintf(msg, 100, "%s\n", (char*)parameter);
+    SEGGER_SYSVIEW_PrintfTarget(msg);
     // force the context switching
     // taskYIELD();
   }
@@ -315,9 +317,12 @@ static void task01_handler(void* parameter)
 
 static void task02_handler(void* parameter)
 {
+  char msg[100];
   while(1)
   {
-    printf("%s\n", (char*)parameter);
+    // printf("%s\n", (char*)parameter);
+    snprintf(msg, 100, "%s\n", (char*)parameter);
+    SEGGER_SYSVIEW_PrintfTarget(msg);
     // force the context switching
     // taskYIELD();
   }

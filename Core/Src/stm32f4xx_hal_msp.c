@@ -73,7 +73,7 @@ void HAL_MspInit(void)
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
-  // vInitPrioGroupValue();
+  vInitPrioGroupValue();
 
   /* USER CODE END MspInit 1 */
 }
