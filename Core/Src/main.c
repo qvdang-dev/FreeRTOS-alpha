@@ -52,6 +52,7 @@ static void task02_handler(void* parameter);
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+extern void SEGGER_UART_init(U32 baud);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -95,8 +96,10 @@ int main(void)
   DWT_CTRL |= (1<<0);
 
   /* USER CODE BEGIN 2 */
+  SEGGER_UART_init(500000);
+
   SEGGER_SYSVIEW_Conf();
-  SEGGER_SYSVIEW_Start();
+  // SEGGER_SYSVIEW_Start();
   
   BaseType_t val;
   val = xTaskCreate(task01_handler, "Task-01", 200, "hello-task01",2, &task01_handle);
