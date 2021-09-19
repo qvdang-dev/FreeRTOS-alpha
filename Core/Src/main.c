@@ -34,8 +34,10 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-static void task01_handler(void* parameter);
-static void task02_handler(void* parameter);
+static void task_GreenLed_handler(void* parameter);
+static void task_RedLed_handler(void* parameter);
+static void task_BlueLed_handler(void* parameter);
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -70,6 +72,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
   TaskHandle_t task01_handle;
   TaskHandle_t task02_handle;
+  TaskHandle_t task03_handle;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,10 +102,13 @@ int main(void)
   SEGGER_SYSVIEW_Start();
   
   BaseType_t val;
-  val = xTaskCreate(task01_handler, "Task-01", 200, "hello-task01",2, &task01_handle);
+  val = xTaskCreate(task_GreenLed_handler, "Task-GreenLed", 200, NULL,2, &task01_handle);
   configASSERT(val == pdPASS);
 
-  val = xTaskCreate(task02_handler, "Task-02", 200, "hello-task02",2, &task02_handle);
+  val = xTaskCreate(task_RedLed_handler, "Task-RedLed", 200, NULL,2, &task02_handle);
+  configASSERT(val == pdPASS);
+
+  val = xTaskCreate(task_BlueLed_handler, "Task-BlueLed", 200, NULL,2, &task03_handle);
   configASSERT(val == pdPASS);
 
   /* USER CODE END 2 */
@@ -302,31 +308,42 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void task01_handler(void* parameter)
+static void task_GreenLed_handler(void* parameter)
 {
-  char msg[100];
+  // char msg[100];
   while(1)
   {
-    // printf("%s\n", (char*)parameter);
-    snprintf(msg, 100, "%s\n", (char*)parameter);
-    SEGGER_SYSVIEW_PrintfTarget(msg);
-    // force the context switching
-    // taskYIELD();
+    // snprintf(msg, 100, "%s\n", (char*)parameter);
+    // SEGGER_SYSVIEW_PrintfTarget(msg);
+    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_GREEN);
+    HAL_Delay(200);
   }
 }
 
-static void task02_handler(void* parameter)
+static void task_RedLed_handler(void* parameter)
 {
-  char msg[100];
+  // char msg[100];
   while(1)
   {
-    // printf("%s\n", (char*)parameter);
-    snprintf(msg, 100, "%s\n", (char*)parameter);
-    SEGGER_SYSVIEW_PrintfTarget(msg);
-    // force the context switching
-    // taskYIELD();
+    // snprintf(msg, 100, "%s\n", (char*)parameter);
+    // SEGGER_SYSVIEW_PrintfTarget(msg);
+    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_RED);
+    HAL_Delay(200);
   }
 }
+
+static void task_BlueLed_handler(void* parameter)
+{
+  // char msg[100];
+  while(1)
+  {
+    // snprintf(msg, 100, "%s\n", (char*)parameter);
+    // SEGGER_SYSVIEW_PrintfTarget(msg);
+    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_BLUE);
+    HAL_Delay(200);
+  }
+}
+
 /* USER CODE END 4 */
 
 /**
