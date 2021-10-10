@@ -316,7 +316,7 @@ static void task_GreenLed_handler(void* parameter)
     // snprintf(msg, 100, "%s\n", (char*)parameter);
     // SEGGER_SYSVIEW_PrintfTarget(msg);
     HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_GREEN);
-    HAL_Delay(200);
+    vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
 
@@ -328,7 +328,7 @@ static void task_RedLed_handler(void* parameter)
     // snprintf(msg, 100, "%s\n", (char*)parameter);
     // SEGGER_SYSVIEW_PrintfTarget(msg);
     HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_RED);
-    HAL_Delay(200);
+    vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
 
@@ -340,7 +340,7 @@ static void task_BlueLed_handler(void* parameter)
     // snprintf(msg, 100, "%s\n", (char*)parameter);
     // SEGGER_SYSVIEW_PrintfTarget(msg);
     HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_BLUE);
-    HAL_Delay(200);
+    vTaskDelay(pdMS_TO_TICKS(3000));
   }
 }
 
