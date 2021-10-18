@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,15 +36,19 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-static void task_GreenLed_handler(void* parameter);
-static void task_RedLed_handler(void* parameter);
-static void task_BlueLed_handler(void* parameter);
-static void task_Button_handler(void* parameter);
-TaskHandle_t task_handle;
-TaskHandle_t task01_handle;
-TaskHandle_t task02_handle;
-TaskHandle_t task03_handle;
-TaskHandle_t task04_handle;
+static void task_led_handler(void* parameter);
+static void task_menu_handler(void* parameter);
+static void task_rtc_handler(void* parameter);
+static void task_print_handler(void* parameter);
+static void task_command_handler(void* parameter);
+
+TaskHandle_t task_led;
+TaskHandle_t task_menu;
+TaskHandle_t task_rtc;
+TaskHandle_t task_print;
+TaskHandle_t task_command;
+QueueHandle_t g_queue_data;
+QueueHandle_t g_queue_print;
 
 /* USER CODE END PD */
 
@@ -107,23 +113,32 @@ int main(void)
   MX_RTC_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  SEGGER_SYSVIEW_Conf();
-  SEGGER_SYSVIEW_Start();
+  // SEGGER_SYSVIEW_Conf();
+  // SEGGER_SYSVIEW_Start();
   
   BaseType_t val;
-  val = xTaskCreate(task_GreenLed_handler, "Task-GreenLed", 200, NULL,3, &task01_handle);
+  val = xTaskCreate(task_led_handler, "task-led", 250, NULL,2, &task_led);
   configASSERT(val == pdPASS);
 
-  val = xTaskCreate(task_RedLed_handler, "Task-RedLed", 200, NULL,2, &task02_handle);
+  val = xTaskCreate(task_menu_handler, "task-menu", 250, NULL,2, &task_menu);
   configASSERT(val == pdPASS);
 
-  val = xTaskCreate(task_BlueLed_handler, "Task-BlueLed", 200, NULL,1, &task03_handle);
+  val = xTaskCreate(task_rtc_handler, "task-rtc", 250, NULL,2, &task_rtc);
   configASSERT(val == pdPASS);
 
-  val = xTaskCreate(task_Button_handler, "Task-BlueLed", 200, NULL,4, &task04_handle);
+  val = xTaskCreate(task_print_handler, "task-print", 250, NULL,2, &task_print);
   configASSERT(val == pdPASS);
-  task_handle = task01_handle;
 
+  val = xTaskCreate(task_command_handler, "task-command", 250, NULL,2, &task_command);
+  configASSERT(val == pdPASS);
+
+  g_queue_data = xQueueCreate(10, sizeof(char));
+  configASSERT(g_queue_data != NULL); 
+
+  g_queue_print = xQueueCreate(10, sizeof(char));
+  configASSERT(g_queue_print != NULL); 
+
+  vTaskStartScheduler();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -388,84 +403,43 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-static void task_GreenLed_handler(void* parameter)
+static void task_led_handler(void* parameter)
 {
-  // char msg[100];
-  while(1)
-  {
-    // snprintf(msg, 100, "%s\n", (char*)parameter);
-    // SEGGER_SYSVIEW_PrintfTarget(msg);
-    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_GREEN);
-    // vTaskDelay(pdMS_TO_TICKS(200));
-    BaseType_t status = xTaskNotifyWait(0, 0, NULL, pdMS_TO_TICKS(200));
-    if(status == pdTRUE )
-    {
-      vTaskSuspendAll();
-      task_handle = task02_handle;
-      xTaskResumeAll();
-      vTaskDelete(NULL);
-    }
-  }
-}
-
-static void task_RedLed_handler(void* parameter)
-{
-  // char msg[100];
-  while(1)
-  {
-    // snprintf(msg, 100, "%s\n", (char*)parameter);
-    // SEGGER_SYSVIEW_PrintfTarget(msg);
-    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_RED);
-    // vTaskDelay(pdMS_TO_TICKS(1000));
-    BaseType_t status = xTaskNotifyWait(0, 0, NULL, pdMS_TO_TICKS(1000));
-    if(status == pdTRUE )
-    {
-      vTaskSuspendAll();
-      task_handle = task03_handle;
-      xTaskResumeAll();
-      vTaskDelete(NULL);
-    }
-  }
-}
-
-static void task_BlueLed_handler(void* parameter)
-{
-  // char msg[100];
-  while(1)
-  {
-    // snprintf(msg, 100, "%s\n", (char*)parameter);
-    // SEGGER_SYSVIEW_PrintfTarget(msg);
-    HAL_GPIO_TogglePin(USER_LED_PORT, USER_LED_BLUE);
-    // vTaskDelay(pdMS_TO_TICKS(3000));
-    BaseType_t status = xTaskNotifyWait(0, 0, NULL, pdMS_TO_TICKS(3000));
-    if(status == pdTRUE )
-    {
-      vTaskSuspendAll();
-      task_handle = NULL;
-      xTaskResumeAll();
-      vTaskDelete(NULL);
-    }    
-  }
-}
-
-static void task_Button_handler(void* parameter)
-{
-  GPIO_PinState Curr_sta;
-  GPIO_PinState Pre_sta = GPIO_PIN_RESET;
   for(;;)
   {
-    // check button pin
-    Curr_sta = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0);
-    if( Curr_sta == GPIO_PIN_SET)
-    {
-        if(Pre_sta == GPIO_PIN_RESET)
-        {
-          xTaskNotify(task_handle, 0, eNoAction);
-        }
-    }
-    Pre_sta = Curr_sta;
-    vTaskDelay(pdMS_TO_TICKS(10)); // delay 10ms
 
+  }
+}
+
+static void task_menu_handler(void* parameter)
+{
+  for(;;)
+  {
+    
+  }
+}
+
+static void task_rtc_handler(void* parameter)
+{
+  for(;;)
+  {
+    
+  }
+}
+
+static void task_print_handler(void* parameter)
+{
+  for(;;)
+  {
+    
+  }
+}
+
+static void task_command_handler(void* parameter)
+{
+  for(;;)
+  {
+    
   }
 }
 
