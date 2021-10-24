@@ -23,9 +23,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
 
 /* USER CODE END Includes */
 
@@ -36,13 +33,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-TaskHandle_t task_led;
-TaskHandle_t task_menu;
-TaskHandle_t task_rtc;
-TaskHandle_t task_print;
-TaskHandle_t task_command;
-QueueHandle_t g_queue_data;
-QueueHandle_t g_queue_print;
 
 /* USER CODE END PD */
 
@@ -52,11 +42,6 @@ QueueHandle_t g_queue_print;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-RTC_HandleTypeDef hrtc;
-
-UART_HandleTypeDef huart2;
-
-volatile uint8_t user_data;
 
 /* USER CODE BEGIN PV */
 #define DWT_CTRL (*(volatile uint32_t*) 0xE0001000)

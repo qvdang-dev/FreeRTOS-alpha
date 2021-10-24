@@ -29,27 +29,24 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+typedef struct
+{
+  uint8_t payload[10];
+  uint8_t len; 
+}command_t;
 
-/* USER CODE END Includes */
-
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
-
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
+typedef enum
+{
+  state_menu = 0,
+  state_led,
+  state_cmd,
+  state_print,
+  state_rtc
+}state_t;
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -59,6 +56,22 @@ void task_menu_handler(void* parameter);
 void task_rtc_handler(void* parameter);
 void task_print_handler(void* parameter);
 void task_command_handler(void* parameter);
+
+TaskHandle_t task_led;
+TaskHandle_t task_menu;
+TaskHandle_t task_rtc;
+TaskHandle_t task_print;
+TaskHandle_t task_command;
+QueueHandle_t g_queue_data;
+QueueHandle_t g_queue_print;
+
+
+RTC_HandleTypeDef hrtc;
+
+UART_HandleTypeDef huart2;
+
+volatile uint8_t user_data;
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
