@@ -36,12 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-static void task_led_handler(void* parameter);
-static void task_menu_handler(void* parameter);
-static void task_rtc_handler(void* parameter);
-static void task_print_handler(void* parameter);
-static void task_command_handler(void* parameter);
-
 TaskHandle_t task_led;
 TaskHandle_t task_menu;
 TaskHandle_t task_rtc;
@@ -61,6 +55,8 @@ QueueHandle_t g_queue_print;
 RTC_HandleTypeDef hrtc;
 
 UART_HandleTypeDef huart2;
+
+volatile uint8_t user_data;
 
 /* USER CODE BEGIN PV */
 #define DWT_CTRL (*(volatile uint32_t*) 0xE0001000)
@@ -135,8 +131,11 @@ int main(void)
   g_queue_data = xQueueCreate(10, sizeof(char));
   configASSERT(g_queue_data != NULL); 
 
-  g_queue_print = xQueueCreate(10, sizeof(char));
+  g_queue_print = xQueueCreate(10, sizeof(long unsigned int));
   configASSERT(g_queue_print != NULL); 
+
+  // enable uart data byte reception 
+  HAL_UART_Receive_IT(&huart2, &user_data, 1);
 
   vTaskStartScheduler();
   /* USER CODE END 2 */
@@ -402,49 +401,37 @@ static void MX_GPIO_Init(void)
 
 }
 
-/* USER CODE BEGIN 4 */
-static void task_led_handler(void* parameter)
-{
-  for(;;)
-  {
-
-  }
-}
-
-static void task_menu_handler(void* parameter)
-{
-  for(;;)
-  {
-    
-  }
-}
-
-static void task_rtc_handler(void* parameter)
-{
-  for(;;)
-  {
-    
-  }
-}
-
-static void task_print_handler(void* parameter)
-{
-  for(;;)
-  {
-    
-  }
-}
-
-static void task_command_handler(void* parameter)
-{
-  for(;;)
-  {
-    
-  }
-}
 
 /* USER CODE END 4 */
-
+// uart-rx complete callback
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  /* 
+    1.check if the Queue is full or not
+      + if the queue is not full -> enqueue data byte
+      + if the queue is full check the character is "\n" -> user data
+    2. send notification to handle the user data when the user data byte is "\n"
+    3. enable uart data byte rx again on IT mode
+  */
+  if (xQueueIsQueueEmptyFromISR(g_queue_data) == pdFAIL)
+  {
+    xQueueSendFromISR(g_queue_data, (void*)&user_data,NULL);
+  }
+  else
+  {
+    uint8_t tmp_data;
+    if(user_data == '\n')
+    {
+      xQueueReceiveFromISR(g_queue_data, (void*)&tmp_data, NULL);
+      xQueueSendFromISR(g_queue_data, (void*)&user_data, NULL);
+    }
+  }
+  if (user_data == '\n')
+  {
+    xTaskNotifyFromISR(task_command, 0, eNoAction, NULL);
+  }
+  HAL_UART_Receive_IT(&huart2, &user_data, 1);
+}
 /**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM6 interrupt took place, inside
