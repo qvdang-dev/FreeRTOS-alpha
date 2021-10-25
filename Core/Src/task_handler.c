@@ -10,6 +10,64 @@ curr_state = state_menu;
 /* USER CODE BEGIN 4 */
 void task_led_handler(void* parameter)
 {
+  const char* msg_led = "------------------\n"
+                        "      LED       \n"
+                        "------------------\n"
+                        "(none, e1, e2, e3, e4)\n"
+                        "Enter your choice here: ";
+  uint32_t cmd_addr;
+  command_t *cmd;
+
+  for(;;)
+  {
+    // wait for the notification from menu task
+    xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+
+    // send message to host
+    xQueueSend(g_queue_print, msg_led, portMAX_DELAY);
+
+    // wait for the led command from Print task
+    xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
+
+    // extract led command
+    cmd = (command_t*)cmd_addr;
+    if (cmd->len <= 4)
+    {
+      if (!strcmp((char*)cmd->payload, "none"))
+      {
+        // stop leds
+      }
+      else if (!strcmp((char*)cmd->payload, "e1"))
+      {
+        // led 1
+      }
+      else if(!strcmp((char*)cmd->payload, "e2"))
+      {
+        // led 2
+      }
+      else if (!strcmp((char*)cmd->payload, "e3"))
+      {
+        // led 3
+      }
+      else if (!strcmp((char*)cmd->payload, "e4"))
+      {
+        // led 4
+      }
+      else
+      {
+        // print invalid command
+      }
+    }
+
+    curr_state = state_menu;
+
+    // back to menu task
+    xTaskNotify(task_menu, 0, portMAX_DELAY);
+  }
+}
+
+void task_menu_handler(void* parameter)
+{
   const char* msg_menu = "------------------\n"
                           "      MENU       \n"
                           "------------------\n"
@@ -23,6 +81,7 @@ void task_led_handler(void* parameter)
   uint32_t cmd_addr;
   command_t *cmd;
   uint8_t option;
+
   for(;;)
   {
     xQueueSend(g_queue_print, msg_menu, portMAX_DELAY);
@@ -67,14 +126,6 @@ void task_led_handler(void* parameter)
     }
 
     xTaskNotifyWait(0, 0, NULL, portMAX_DELAY); 
-  }
-}
-
-void task_menu_handler(void* parameter)
-{
-  for(;;)
-  {
-    
   }
 }
 
