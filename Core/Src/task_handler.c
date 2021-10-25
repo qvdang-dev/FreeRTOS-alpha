@@ -10,9 +10,63 @@ curr_state = state_menu;
 /* USER CODE BEGIN 4 */
 void task_led_handler(void* parameter)
 {
+  const char* msg_menu = "------------------\n"
+                          "      MENU       \n"
+                          "------------------\n"
+                          "Led effect: 0\n"
+                          "Date and timer: 1\n"
+                          "Exit: 2\n"
+                          "Enter your choice here: ";
+  
+  const char* invalid_msg_menu = "Invalid command\n";
+
+  uint32_t cmd_addr;
+  command_t *cmd;
+  uint8_t option;
   for(;;)
   {
+    xQueueSend(g_queue_print, msg_menu, portMAX_DELAY);
 
+    // wait for the command
+    xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
+    cmd = (command_t*)cmd_addr;
+
+    if (cmd->len == 1)
+    {
+      // process commnad
+      option = cmd->payload[0] - 48;
+      switch (option)
+      {
+        case 0:
+        {
+          curr_state = state_led;
+          xTaskNotify(task_led,0, eNoAction);
+        }
+        break;
+
+        case 1:
+        {
+          curr_state = state_rtc;
+          xTaskNotify(task_rtc, 0, eNoAction);
+        }
+        break;
+
+        case 2:
+        {
+          break;
+        }
+        
+        default:
+          break;
+      }
+    }
+    else
+    {
+      // send invalid message to host
+      xQueueSend(g_queue_print, invalid_msg_menu, portMAX_DELAY);
+    }
+
+    xTaskNotifyWait(0, 0, NULL, portMAX_DELAY); 
   }
 }
 
