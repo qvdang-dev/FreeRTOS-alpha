@@ -42,6 +42,9 @@
     extern "C" {
 #endif
 /* *INDENT-ON* */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
 
 /*-----------------------------------------------------------
 * MACROS AND DEFINITIONS

@@ -19,6 +19,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+#include "timers.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -38,6 +42,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
+void led_timer_callback(TimerHandle_t xTimer);
 
 /* USER CODE END PM */
 
@@ -119,6 +124,10 @@ int main(void)
   g_queue_print = xQueueCreate(10, sizeof(long unsigned int));
   configASSERT(g_queue_print != NULL); 
 
+  for (int i = 0; i < 4; i++)
+  {
+    handle_led_timer[i] = xTimerCreate("led_timer", pdMS_TO_TICKS(500), pdTRUE, (void*)(i + 1), led_timer_callback);
+  }
   // enable uart data byte reception 
   HAL_UART_Receive_IT(&huart2, &user_data, 1);
 
@@ -386,6 +395,45 @@ static void MX_GPIO_Init(void)
 
 }
 
+void led_timer_callback(TimerHandle_t xTimer)
+{
+  // get the timer ID
+  uint32_t uiTimerID;
+  uiTimerID = (uint32_t) pvTimerGetTimerID(xTimer);
+
+  switch (uiTimerID)
+  {
+    case 1:
+    {
+      LedEffect01();
+    }
+    break;
+
+    case 2:
+    {
+      LedEffect02();
+    }
+    break;
+
+    case 3:
+    {
+      LedEffect03();
+    }
+    break;
+
+    case 4:
+    {
+      LedEffect04();
+    }
+    break;
+
+    default:
+      break;
+      
+  }
+
+  // do the led effect
+}
 
 /* USER CODE END 4 */
 // uart-rx complete callback

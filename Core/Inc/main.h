@@ -32,6 +32,7 @@ extern "C" {
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "timers.h"
 
 typedef struct
 {
@@ -57,6 +58,13 @@ void task_rtc_handler(void* parameter);
 void task_print_handler(void* parameter);
 void task_command_handler(void* parameter);
 
+void LedEffectStop(void);
+void LedEffect(uint32_t n);
+void LedEffect01(void);
+void LedEffect02(void);
+void LedEffect03(void);
+void LedEffect04(void);
+
 TaskHandle_t task_led;
 TaskHandle_t task_menu;
 TaskHandle_t task_rtc;
@@ -65,6 +73,7 @@ TaskHandle_t task_command;
 QueueHandle_t g_queue_data;
 QueueHandle_t g_queue_print;
 
+TimerHandle_t handle_led_timer[4];
 
 RTC_HandleTypeDef hrtc;
 
