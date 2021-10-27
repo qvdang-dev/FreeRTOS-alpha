@@ -142,9 +142,11 @@ void task_rtc_handler(void* parameter)
 
 void task_print_handler(void* parameter)
 {
+  uint32_t *msg;
   for(;;)
   {
-    
+    xQueueReceive(g_queue_print, msg, portMAX_DELAY);
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen((char*)msg), portMAX_DELAY);
   }
 }
 
