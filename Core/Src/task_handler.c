@@ -15,6 +15,9 @@ void task_led_handler(void* parameter)
                         "------------------\n"
                         "(none, e1, e2, e3, e4)\n"
                         "Enter your choice here: ";
+
+  const char* msg_inv = "Invalid command\n";
+  
   uint32_t cmd_addr;
   command_t *cmd;
 
@@ -35,27 +38,27 @@ void task_led_handler(void* parameter)
     {
       if (!strcmp((char*)cmd->payload, "none"))
       {
-        // stop leds
+        LedEffectStop();
       }
       else if (!strcmp((char*)cmd->payload, "e1"))
       {
-        // led 1
+        LedEffect(1);
       }
       else if(!strcmp((char*)cmd->payload, "e2"))
       {
-        // led 2
+        LedEffect(2);
       }
       else if (!strcmp((char*)cmd->payload, "e3"))
       {
-        // led 3
+        LedEffect(3);
       }
       else if (!strcmp((char*)cmd->payload, "e4"))
       {
-        // led 4
+        LedEffect(4);
       }
       else
       {
-        // print invalid command
+        xQueueSend(g_queue_print, msg_inv, portMAX_DELAY);
       }
     }
 
