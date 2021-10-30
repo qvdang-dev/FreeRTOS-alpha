@@ -65,7 +65,7 @@ void task_led_handler(void* parameter)
     curr_state = state_menu;
 
     // back to menu task
-    xTaskNotify(task_menu, 0, portMAX_DELAY);
+    xTaskNotify(task_menu, 0, eNoAction);
   }
 }
 
@@ -136,7 +136,8 @@ void task_rtc_handler(void* parameter)
 {
   for(;;)
   {
-    vTaskDelay((100));
+	  // waiting notification from menu task
+	  xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
   }
 }
 
