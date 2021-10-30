@@ -446,7 +446,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     2. send notification to handle the user data when the user data byte is "\n"
     3. enable uart data byte rx again on IT mode
   */
-  if (xQueueIsQueueEmptyFromISR(g_queue_data) == pdFAIL)
+  if (xQueueIsQueueFullFromISR(g_queue_data) == pdFAIL)
   {
     xQueueSendFromISR(g_queue_data, (void*)&user_data,NULL);
   }

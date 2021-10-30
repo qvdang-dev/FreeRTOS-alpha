@@ -27,7 +27,7 @@ void task_led_handler(void* parameter)
     xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
 
     // send message to host
-    xQueueSend(g_queue_print, msg_led, portMAX_DELAY);
+    xQueueSend(g_queue_print, &msg_led, portMAX_DELAY);
 
     // wait for the led command from Print task
     xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
@@ -58,7 +58,7 @@ void task_led_handler(void* parameter)
       }
       else
       {
-        xQueueSend(g_queue_print, msg_inv, portMAX_DELAY);
+        xQueueSend(g_queue_print, &msg_inv, portMAX_DELAY);
       }
     }
 
@@ -87,7 +87,7 @@ void task_menu_handler(void* parameter)
 
   for(;;)
   {
-    xQueueSend(g_queue_print, msg_menu, portMAX_DELAY);
+    xQueueSend(g_queue_print, &msg_menu, portMAX_DELAY);
 
     // wait for the command
     xTaskNotifyWait(0, 0, &cmd_addr, portMAX_DELAY);
@@ -125,7 +125,7 @@ void task_menu_handler(void* parameter)
     else
     {
       // send invalid message to host
-      xQueueSend(g_queue_print, invalid_msg_menu, portMAX_DELAY);
+      xQueueSend(g_queue_print, &invalid_msg_menu, portMAX_DELAY);
     }
 
     xTaskNotifyWait(0, 0, NULL, portMAX_DELAY); 
@@ -136,7 +136,7 @@ void task_rtc_handler(void* parameter)
 {
   for(;;)
   {
-    
+    vTaskDelay((100));
   }
 }
 
@@ -145,7 +145,7 @@ void task_print_handler(void* parameter)
   uint32_t *msg;
   for(;;)
   {
-    xQueueReceive(g_queue_print, msg, portMAX_DELAY);
+    xQueueReceive(g_queue_print, &msg, portMAX_DELAY);
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen((char*)msg), portMAX_DELAY);
   }
 }
