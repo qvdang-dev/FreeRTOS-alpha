@@ -24,47 +24,16 @@
 #include "queue.h"
 #include "timers.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include <stdio.h>
 
-/* USER CODE END Includes */
-
-/* Private typedef -----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
 void led_timer_callback(TimerHandle_t xTimer);
 
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-
-/* USER CODE BEGIN PV */
 #define DWT_CTRL (*(volatile uint32_t*) 0xE0001000)
-/* USER CODE END PV */
 
-/* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_RTC_Init(void);
 static void MX_USART2_UART_Init(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
-
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -72,32 +41,15 @@ static void MX_USART2_UART_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
 
-
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_RTC_Init();
   MX_USART2_UART_Init();
+
   /* USER CODE BEGIN 2 */
   // SEGGER_SYSVIEW_Conf();
   // SEGGER_SYSVIEW_Start();
@@ -128,21 +80,13 @@ int main(void)
   {
     handle_led_timer[i] = xTimerCreate("led_timer", pdMS_TO_TICKS(500), pdTRUE, (void*)(i + 1), led_timer_callback);
   }
+
   // enable uart data byte reception 
   HAL_UART_Receive_IT(&huart2, &user_data, 1);
-
+  
   vTaskStartScheduler();
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+  while (1){}
 }
 
 /**
