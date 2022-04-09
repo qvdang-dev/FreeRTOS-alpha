@@ -46,8 +46,24 @@ typedef enum
   state_led,
   state_cmd,
   state_print,
-  state_rtc
+  state_rtc_menu,
+  state_rtc_timeconfig,
+  state_rtc_dateconfig,
+  state_rtc_report
 }state_t;
+
+typedef enum
+{
+  cfg_unf = 0,
+  cfg_hh,
+  cfg_mm,
+  cfg_ss,
+  cfg_date,
+  cfg_month,
+  cfg_DoW,
+  cfg_year,
+  cfg_report
+}rtc_state_t;
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
 
@@ -64,6 +80,11 @@ void LedEffect01(void);
 void LedEffect02(void);
 void LedEffect03(void);
 void LedEffect04(void);
+
+void show_time_date(void);
+void rtc_config_time(RTC_TimeTypeDef *time);
+void rtc_config_date(RTC_DateTypeDef *date);
+uint8_t getnumber(uint8_t *msg, uint8_t len);
 
 TaskHandle_t task_led;
 TaskHandle_t task_menu;
